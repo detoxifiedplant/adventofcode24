@@ -1,4 +1,4 @@
-use regex::Regex;
+use regex::{Captures, Regex};
 use std::fs::File;
 use std::io::{self, BufRead, BufReader, Read};
 
@@ -19,10 +19,7 @@ fn get_file_data() {
 fn part1(data: &str) {
     let regex = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
     let sum: usize = 0;
-    let res: usize = regex
-        .captures_iter(data)
-        .map(|word| word[1].parse::<usize>().unwrap() * word[2].parse::<usize>().unwrap())
-        .sum();
+    let res: usize = regex.captures_iter(data).map(|word| get_mul(word)).sum();
     println!("{:?}", res);
 }
 
@@ -37,10 +34,16 @@ fn part2(data: &str) {
             "don't()" => mul = false,
             _ => {
                 if mul {
-                    sum += word[1].parse::<usize>().unwrap() * word[2].parse::<usize>().unwrap();
+                    sum += get_mul(word);
                 }
             }
         }
     });
     println!("{:?}", sum);
+}
+
+fn get_mul(capture: Captures) -> usize {
+    let l = capture[1].parse::<usize>().unwrap();
+    let r = capture[2].parse::<usize>().unwrap();
+    l * r
 }
