@@ -12,15 +12,14 @@ fn get_file_data() {
     let mut data = String::new();
 
     reader.read_to_string(&mut data).unwrap();
-    part1(&data);
+    println!("{:?}", part1(&data));
     part2(&data);
+    part2_mehtod2(&data);
 }
 
-fn part1(data: &str) {
+fn part1(data: &str) -> usize{
     let regex = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
-    let sum: usize = 0;
-    let res: usize = regex.captures_iter(data).map(|word| get_mul(word)).sum();
-    println!("{:?}", res);
+    regex.captures_iter(data).map(|word| get_mul(word)).sum()
 }
 
 fn part2(data: &str) {
@@ -40,6 +39,15 @@ fn part2(data: &str) {
         }
     });
     println!("{:?}", sum);
+}
+
+fn part2_mehtod2(data: &str) {
+    let mut segmants = data.split("don't");
+    let initial = part1(segmants.next().unwrap_or(""));
+    let res = segmants.fold(initial, |acc, e| {
+        acc + part1(&e[e.find("do()").unwrap_or(e.len())..])
+    });
+    println!("{:?}", res);
 }
 
 fn get_mul(capture: Captures) -> usize {
